@@ -1,7 +1,10 @@
 package main.Solver;
 
+import com.sun.tools.javah.Gen;
 import main.Configuration;
 import main.util.MersenneTwister;
+
+import java.util.Collections;
 
 
 public class Chromosome implements Comparable<Chromosome> {
@@ -22,13 +25,15 @@ public class Chromosome implements Comparable<Chromosome> {
     }
 
     static Chromosome produceRandom(){
+        Collections.shuffle(GeneticSolver.possibleGenes);
         int gridSize = Configuration.instance.size;
         int bitOffset = Configuration.instance.offset;
         MersenneTwister random = Configuration.instance.random;
         int[][] gene = new int[gridSize][gridSize];
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
-                gene[i][j] = (random.nextInt(gridSize) << bitOffset) + random.nextInt(gridSize);
+                // gene[i][j] = (random.nextInt(gridSize) << bitOffset) + random.nextInt(gridSize);
+                
             }
         }
         return new Chromosome(gene);
@@ -60,20 +65,21 @@ public class Chromosome implements Comparable<Chromosome> {
         int[][] child2 = new int[gridSize][gridSize];
         for (int i = 0; i < gridSize; i++){
             for (int j = 0; j < gridSize; j++){
-                // boolean selection = random.nextBoolean();
-                // child1[i][j] = selection ? gene[i][j] : mate.gene[i][j];
-                // child2[i][j] = selection ? mate.gene[i][j] : gene[i][j];
-                child1[i][j] = crossoverGene(gene[i][j], mate.gene[i][j]);
-                child2[i][j] = crossoverGene(mate.gene[i][j], gene[i][j]);
+                boolean selection = random.nextBoolean();
+                child1[i][j] = selection ? gene[i][j] : mate.gene[i][j];
+                child2[i][j] = selection ? mate.gene[i][j] : gene[i][j];
+                // child1[i][j] = crossoverGene(gene[i][j], mate.gene[i][j]);
+                // child2[i][j] = crossoverGene(mate.gene[i][j], gene[i][j]);
             }
         }
-        return new Chromosome[] {new Chromosome(child1), new Chromosome(child2)};
+        return new Chromosome[] { new Chromosome(child1),
+                new Chromosome(child2) };
     }
 
     private int crossoverGene(int gene1, int gene2){
         if (random.nextBoolean())
         return (gene1 & symbol1Mask) + (gene2 & symbol2Mask);
-        return (gene1 & symbol2Mask) + (gene2 & symbol1Mask);
+        return (gene1 % symbol2Mask) + (gene2 & symbol1Mask);
     }
     /**
      * LOW fitness is desirable -> high fitness is bad.
@@ -98,21 +104,21 @@ public class Chromosome implements Comparable<Chromosome> {
         int symbol2 = gene[x][y] & symbol2Mask;
         for (int i = 0; i < gridSize; i++) {
             if (i != x && (symbol1 == (gene[i][y] & symbol1Mask))) { // column symbol 1 error
-                c1 += 1;
+                c1 = 1;
             }
             if (i != x && (symbol2 == (gene[i][y] & symbol2Mask))) { // column symbol 2 error
-                c2 += 1;
+                c2 = 1;
             }
             if (i != y && (symbol1 == (gene[x][i] & symbol1Mask))) { // row symbol 1 error
-                r1 += 1;
+                r1 = 1;
             }
             if (i != y && (symbol2 == (gene[x][i] & symbol2Mask))) { // row symbol 2 error
-                r2 += 1;
+                r2 = 1;
             }
             for (int j = 0; j < gridSize; j++) { // duplicate error
-                if (gene[x][y] == gene[i][j] && x != i && y != i) {
-                    d += 1;
-                    // break;
+                if (gene[x][y] == gene[i][j]) {
+                    d = 1;
+                    break;
                 }
             }
         }

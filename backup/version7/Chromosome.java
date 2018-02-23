@@ -67,7 +67,8 @@ public class Chromosome implements Comparable<Chromosome> {
                 child2[i][j] = crossoverGene(mate.gene[i][j], gene[i][j]);
             }
         }
-        return new Chromosome[] {new Chromosome(child1), new Chromosome(child2)};
+        return new Chromosome[] { new Chromosome(child1),
+                new Chromosome(child2) };
     }
 
     private int crossoverGene(int gene1, int gene2){

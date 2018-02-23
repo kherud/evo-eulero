@@ -2,19 +2,28 @@ package main.Solver;
 
 import main.Configuration;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class GeneticSolver {
 
     private Chromosome[] population;
     private int generation = 0;
+    public static ArrayList<Integer> possibleGenes;
 
     // Configuration shortcuts
+    private int gridSize = Configuration.instance.size;
     private double mutationRatio = Configuration.instance.mutationRatio;
     private double crossoverRatio = Configuration.instance.crossoverRatio;
     private double elitismRatio = Configuration.instance.elitismRatio;
 
     public GeneticSolver() {
+        possibleGenes = new ArrayList<>();
+        for (int i = 0; i < gridSize; i++){
+            for (int j = 0; j < gridSize; j++){
+                possibleGenes.add((i << 3) + j);
+            }
+        }
         population = new Chromosome[Configuration.instance.populationSize];
         for (int i = 0; i < population.length; i++) {
             population[i] = Chromosome.produceRandom();
@@ -45,13 +54,13 @@ public class GeneticSolver {
             } else if (Configuration.instance.random.nextFloat() <= mutationRatio) {
                 chromosomes[index] = population[index].mutate();
             } else {
-                chromosomes[index] = population[index]; // Chromosome.produceRandom();// population[index];
+                chromosomes[index] = Chromosome.produceRandom();// population[index];
             }
             index++;
         }
         Arrays.sort(chromosomes);
         population = chromosomes;
-        System.out.println("Generation " + generation + " -- " + population[0].getFitness() + " -- " + population[1023].getFitness());
+        System.out.println("Generation " + generation + " -- " + population[0].getFitness() + " -- " + population[2047].getFitness());
         generation++;
     }
 

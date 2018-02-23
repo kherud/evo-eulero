@@ -10,6 +10,7 @@ public class GeneticSolver {
     private int generation = 0;
 
     // Configuration shortcuts
+    private int gridSize = Configuration.instance.size;
     private double mutationRatio = Configuration.instance.mutationRatio;
     private double crossoverRatio = Configuration.instance.crossoverRatio;
     private double elitismRatio = Configuration.instance.elitismRatio;
@@ -45,13 +46,13 @@ public class GeneticSolver {
             } else if (Configuration.instance.random.nextFloat() <= mutationRatio) {
                 chromosomes[index] = population[index].mutate();
             } else {
-                chromosomes[index] = population[index]; // Chromosome.produceRandom();// population[index];
+                chromosomes[index] = Chromosome.produceRandom();// population[index];
             }
             index++;
         }
         Arrays.sort(chromosomes);
         population = chromosomes;
-        System.out.println("Generation " + generation + " -- " + population[0].getFitness() + " -- " + population[1023].getFitness());
+        System.out.println("Generation " + generation + " -- " + population[0].getFitness() + " -- " + population[2047].getFitness());
         generation++;
     }
 
